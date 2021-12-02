@@ -84,7 +84,86 @@ deeper_sliding_window(input1)
 
 
 
-# Day 2
+# Day 2: Dive!
+
+## Part 1
+
+
+
+```python
+test2_1_input = '''forward 5
+down 5
+forward 8
+up 3
+down 8
+forward 2'''
+
+test2_1_output = 150
+
+def parse_course(line) -> (str, int):
+    return line.split()[0], int(line.split()[1])
+
+def follow_course(course) -> int:
+    distance = 0
+    depth = 0
+    for instruction, value in course:
+        if instruction == 'forward':
+            distance += value
+        elif instruction == 'down':
+            depth += value
+        else:
+            depth -= value
+    return distance * depth
+
+assert follow_course([*map(parse_course, test2_1_input.split('\n'))]) == test2_1_output
+
+input2 = data(2, parse_course)
+
+follow_course(input2)
+```
+
+
+
+
+    1924923
+
+
+
+## Part 2
+
+
+```python
+test2_2_output = 900
+
+def follow_complex_course(course) -> int:
+    distance = 0
+    depth = 0
+    aim = 0
+    for instruction, value in course:
+        if instruction == 'forward':
+            distance += value
+            depth += (aim * value)
+        elif instruction == 'down':
+            aim += value
+        else:
+            aim -= value
+    return distance * depth
+
+assert follow_complex_course([*map(parse_course, test2_1_input.split('\n'))]) == test2_2_output
+
+input2 = data(2, parse_course)
+
+follow_complex_course(input2)
+```
+
+
+
+
+    1982495697
+
+
+
+# Day 3
 
 
 ```python
