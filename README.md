@@ -89,7 +89,6 @@ deeper_sliding_window(input1)
 ## Part 1
 
 
-
 ```python
 test2_1_input = '''forward 5
 down 5
@@ -163,9 +162,112 @@ follow_complex_course(input2)
 
 
 
-# Day 3
+# Day 3: Binary Diagnostic
+
+## Part 1
 
 
 ```python
+test3_1_input = '''00100
+11110
+10110
+10111
+10101
+01111
+00111
+11100
+10000
+11001
+00010
+01010'''
 
+test3_1_output = 198
+
+def check_power_consumption(binary_data) -> int:
+    counter = [0] * len(binary_data[0])
+    treshold = (len(binary_data) / 2)
+    for line in binary_data:
+        for i, digit in enumerate(line):
+            if digit == '1':
+                counter[i] += 1
+    gamma = [0] * len(counter)
+    for i in range(len(gamma)):
+        if counter[i] > treshold:
+            gamma[i] = 1
+    epsilon = [0] * len(gamma)
+    for i in range(len(epsilon)):
+        if gamma[i] == 1:
+            epsilon[i] = 0
+        else:
+            epsilon[i] = 1
+    
+    gamma = int(''.join(map(str, gamma)), 2)
+    epsilon = int(''.join(map(str, epsilon)), 2)
+    return gamma * epsilon
+
+assert check_power_consumption(test3_1_input.split()) == test3_1_output
+
+input3 = data(3)
+
+check_power_consumption(input3)
 ```
+
+
+
+
+    3320834
+
+
+
+## Part 2
+
+
+```python
+test3_2_output = 230
+
+def verify_life_support_rating(binary_data) -> int:
+    oxygen_candidates = binary_data
+    co2_candidates = binary_data
+    counter = [0] * len(binary_data[0])
+    for i in range(len(counter)):
+        for line in oxygen_candidates:
+            if line[i] == '1':
+                counter[i] += 1
+        if len(oxygen_candidates) > 1:
+            oxygen_treshold = len(oxygen_candidates) / 2
+            if counter[i] >= oxygen_treshold:
+                oxygen_target = '1'
+            else:
+                oxygen_target = '0'
+            oxygen_candidates = [x for x in oxygen_candidates if x[i] == oxygen_target]
+        counter[i] = 0
+        for line in co2_candidates:
+            if line[i] == '1':
+                counter[i] += 1
+        if len(co2_candidates) > 1:
+            co2_treshold = len(co2_candidates) / 2
+            if counter[i] >= co2_treshold:
+                co2_target = '0'
+            else:
+                co2_target = '1'
+            co2_candidates = [x for x in co2_candidates if x[i] == co2_target]
+    
+    
+    oxygen = int(''.join(map(str, oxygen_candidates)), 2)
+    co2 = int(''.join(map(str, co2_candidates)), 2)
+    
+    return oxygen * co2
+
+assert verify_life_support_rating(test3_1_input.split()) == test3_2_output
+
+verify_life_support_rating(input3)
+```
+
+
+
+
+    4481199
+
+
+
+# Day 4
