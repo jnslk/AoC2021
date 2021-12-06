@@ -270,4 +270,116 @@ verify_life_support_rating(input3)
 
 
 
-# Day 4
+# Day 4: Giant Squid
+
+## Part 1
+
+
+```python
+test4_1_input = '''7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
+
+22 13 17 11  0
+ 8  2 23  4 24
+21  9 14 16  7
+ 6 10  3 18  5
+ 1 12 20 15 19
+
+ 3 15  0  2 22
+ 9 18 13 17  5
+19  8  7 25 23
+20 11 10 24  4
+14 21 16 12  6
+
+14 21 17 24  4
+10 16 15  9 19
+18  8 23 26 20
+22 11 13  6  5
+ 2  0 12  3  7'''
+
+test4_1_output = 4512
+
+def parse_boards(boards):
+    all_boards = []
+    for board in boards:
+        b = []
+        b.append(set([*map(int, board[:5])]))
+        b.append(set([*map(int, board[5:10])]))
+        b.append(set([*map(int, board[10:15])]))
+        b.append(set([*map(int, board[15:20])]))
+        b.append(set([*map(int, board[20:25])]))
+        b.append(set([*map(int, board[::5])]))
+        b.append(set([*map(int, board[1::5])]))
+        b.append(set([*map(int, board[2::5])]))
+        b.append(set([*map(int, board[3::5])]))
+        b.append(set([*map(int, board[4::5])]))
+        all_boards.append(b)
+    return all_boards
+
+def winning_board_score(numbers, boards) -> int:
+    indices = set()
+    for num in numbers:
+        for i, board in enumerate(boards):
+            for rowcol in board:
+                rowcol.discard(num)
+                if len(rowcol) == 0:
+                    indices.
+                    score = sum([*map(sum,(board[:5]))])
+                    return score * num
+
+test_nums = [*map(int,test4_1_input.split('\n\n')[0].split(','))]
+test_boards = [*map(str.split,test4_1_input.split('\n\n')[1:])]
+assert winning_board_score(test_nums, parse_boards(test_boards))
+
+input4 = data(4, sep='\n\n')
+nums = [*map(int, input4[0].split(','))]
+boards = [*map(str.split, input4[1:])]
+
+winning_board_score(nums, parse_boards(boards))
+```
+
+
+
+
+    74320
+
+
+
+## Part 2
+
+
+```python
+test4_2_output = 1924
+
+def last_board_score(numbers, boards) -> int:
+    winning_boards = set()
+    for num in numbers:
+        for i, board in enumerate(boards):
+            for rowcol in board:
+                rowcol.discard(num)
+                if len(rowcol) == 0:
+                    winning_boards.add(i)
+                    if len(winning_boards) == len(boards):
+                        score = sum([*map(sum,(board[:5]))])
+                        return score * num 
+
+
+assert last_board_score(test_nums, parse_boards(test_boards)) == test4_2_output
+
+input4 = data(4, sep='\n\n')
+nums = [*map(int, input4[0].split(','))]
+boards = [*map(str.split, input4[1:])]
+
+last_board_score(nums, parse_boards(boards))
+```
+
+
+
+
+    17884
+
+
+
+
+```python
+
+```
