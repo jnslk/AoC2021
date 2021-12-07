@@ -372,6 +372,13 @@ boards = [*map(str.split, input4[1:])]
 last_board_score(nums, parse_boards(boards))
 ```
 
+
+
+
+    17884
+
+
+
 # Day 5: Hydrothermal Venture
 
 ## Part 1
@@ -399,20 +406,13 @@ def parse_lines(line):
 
 def count_overlapping_lines(points) -> int:
     overlapping = Counter()
-    lines = []
     for pair in points:
-        if (pair[0][0] == pair[1][0]) or (pair[0][1] == pair[1][1]):
-            lines.append(pair)
-    for line in lines:
-        x1, y1 = line[0]
-        x2, y2 = line[1]
-        for x in range(min(x1,x2),max(x1,x2)+1):
-            for y in range(min(y1,y2),max(y1,y2)+1):
-                overlapping[(x,y)] += 1
-        
-    # apply lines on grid, increment counter 
-    # sweep over grid and count places with value of 2 or higher
-
+        x1, y1 = pair[0]
+        x2, y2 = pair[1]
+        if x1 == x2 or y1 == y2:
+            for x in range(min(x1,x2),max(x1,x2)+1):
+                for y in range(min(y1,y2),max(y1,y2)+1):
+                    overlapping[(x,y)] += 1
     return sum(1 for v in overlapping.values() if v > 1)
 
 assert count_overlapping_lines([*map(parse_lines, test5_1_input.split('\n'))]) == test5_1_output
@@ -470,6 +470,63 @@ count_overlapping_lines_diagonal(input5)
 # Day 6: Lanternfish
 
 ## Part 1
+
+
+```python
+test6_1_input = '3,4,3,1,2'
+
+test6_1_output1 = 26
+test6_1_output2 = 5934
+
+def simulate_lanternfish(fish, n=80) -> int:
+    fish_population = Counter(fish)
+    for day in range(n):
+        fish_population = simulate_day(fish_population)
+    return sum(fish_population.values())
+
+def simulate_day(fish):
+    new_population = Counter()
+    for f in range(1, 9):
+        new_population[f-1] = fish[f]
+    new_population[6] += fish[0]
+    new_population[8] = fish[0]
+    return new_population
+
+assert simulate_lanternfish([*map(int, test6_1_input.split(','))], 18) == test6_1_output1
+assert simulate_lanternfish([*map(int, test6_1_input.split(','))]) == test6_1_output2
+
+
+input6 = data(6,int,sep=',')
+
+simulate_lanternfish(input6)
+```
+
+
+
+
+    373378
+
+
+
+## Part 2
+
+
+```python
+test6_2_output = 26984457539
+
+assert simulate_lanternfish([*map(int, test6_1_input.split(','))], 256) == test6_2_output
+
+simulate_lanternfish(input6, 256)
+```
+
+
+
+
+    1682576647495
+
+
+
+# Day 7
 
 
 ```python
