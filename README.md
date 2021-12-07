@@ -10,6 +10,8 @@ This notebook contains my solutions for the 2021 version of [Advent of Code](htt
 
 ```python
 from collections import Counter
+from statistics import median, mean
+from math import floor, ceil
 
 def data(day: int, parser=str, sep='\n') -> list:
     "Split the day's input file into sections separated by `sep`, and apply `parser` function to each."
@@ -526,7 +528,69 @@ simulate_lanternfish(input6, 256)
 
 
 
-# Day 7
+# Day 7: The Treachery of Whales
+
+## Part 1
+
+
+```python
+test7_1_input = '16,1,2,0,4,2,7,1,2,14'
+
+test7_1_output = 37
+
+def minimum_fuel_cost(crabs) -> int:
+    cost = 0
+    target = median(crabs)
+    for crab in crabs:
+        cost += abs(crab - target)
+    return int(cost)
+
+assert minimum_fuel_cost([*map(int ,test7_1_input.split(','))]) == test7_1_output
+
+input7 = data(7,int,sep=',')
+
+minimum_fuel_cost(input7)
+```
+
+
+
+
+    347509
+
+
+
+## Part 2
+
+
+```python
+test7_2_output = 168
+
+def minimum_fuel_cost2(crabs) -> int:
+    cost_floor = 0
+    cost_ceil = 0
+    target_mean_floor = int(floor(mean(crabs)))
+    target_mean_ceil = int(ceil(mean(crabs)))
+    
+    for crab in crabs:
+        cost_floor += (abs(crab - target_mean_floor)) * (abs(crab - target_mean_floor)+1) / 2
+        cost_ceil += (abs(crab - target_mean_ceil)) * (abs(crab - target_mean_ceil)+1) / 2
+    return int(min(cost_floor, cost_ceil))
+
+assert minimum_fuel_cost2([*map(int ,test7_1_input.split(','))]) == test7_2_output
+
+input7 = data(7,int,sep=',')
+
+minimum_fuel_cost2(input7)
+```
+
+
+
+
+    98257206
+
+
+
+# Day 8
 
 
 ```python
