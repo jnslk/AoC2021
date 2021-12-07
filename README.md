@@ -5,10 +5,12 @@ This notebook contains my solutions for the 2021 version of [Advent of Code](htt
 ![Test Notebook](https://github.com/jnslk/AoC2021/workflows/test%20notebook/badge.svg)
 
 
-## Dataimport
+## Imports and Dataimport
 
 
 ```python
+from collections import Counter
+
 def data(day: int, parser=str, sep='\n') -> list:
     "Split the day's input file into sections separated by `sep`, and apply `parser` function to each."
     with open(f'../data/day{day}.txt') as f:
@@ -316,13 +318,11 @@ def parse_boards(boards):
     return all_boards
 
 def winning_board_score(numbers, boards) -> int:
-    indices = set()
     for num in numbers:
-        for i, board in enumerate(boards):
+        for board in boards:
             for rowcol in board:
                 rowcol.discard(num)
                 if len(rowcol) == 0:
-                    indices.
                     score = sum([*map(sum,(board[:5]))])
                     return score * num
 
@@ -372,12 +372,104 @@ boards = [*map(str.split, input4[1:])]
 last_board_score(nums, parse_boards(boards))
 ```
 
+# Day 5: Hydrothermal Venture
+
+## Part 1
+
+
+```python
+test5_1_input = '''0,9 -> 5,9
+8,0 -> 0,8
+9,4 -> 3,4
+2,2 -> 2,1
+7,0 -> 7,4
+6,4 -> 2,0
+0,9 -> 2,9
+3,4 -> 1,4
+0,0 -> 8,8
+5,5 -> 8,2'''
+
+test5_1_output = 5
+
+def parse_lines(line):
+    first, second = line.split(' -> ')
+    first = first.split(',')
+    second = second.split(',')
+    return [*map(int,first)], [*map(int,second)]
+
+def count_overlapping_lines(points) -> int:
+    overlapping = Counter()
+    lines = []
+    for pair in points:
+        if (pair[0][0] == pair[1][0]) or (pair[0][1] == pair[1][1]):
+            lines.append(pair)
+    for line in lines:
+        x1, y1 = line[0]
+        x2, y2 = line[1]
+        for x in range(min(x1,x2),max(x1,x2)+1):
+            for y in range(min(y1,y2),max(y1,y2)+1):
+                overlapping[(x,y)] += 1
+        
+    # apply lines on grid, increment counter 
+    # sweep over grid and count places with value of 2 or higher
+
+    return sum(1 for v in overlapping.values() if v > 1)
+
+assert count_overlapping_lines([*map(parse_lines, test5_1_input.split('\n'))]) == test5_1_output
+
+input5 = data(5, parse_lines)
+
+count_overlapping_lines(input5)
+```
 
 
 
-    17884
+
+    7297
 
 
+
+## Part 2
+
+
+```python
+test5_2_output = 12
+
+def count_overlapping_lines_diagonal(points) -> int:
+    overlapping = Counter()
+    for pair in points:
+        x1, y1 = pair[0]
+        x2, y2 = pair[1]
+        dx = 1 if x2>x1 else -1
+        dy = 1 if y2>y1 else -1
+        if x1 == x2:
+            dx = 0
+        if y1 == y2:
+            dy = 0
+        overlapping[(x1,y1)] += 1
+        while x1 != x2 or y1 != y2:
+            x1 += dx
+            y1 += dy
+            overlapping[(x1,y1)] += 1
+    return  sum(1 for v in overlapping.values() if v > 1)
+
+assert count_overlapping_lines_diagonal([*map(parse_lines, test5_1_input.split('\n'))]) == test5_2_output
+
+input5 = data(5, parse_lines)
+
+count_overlapping_lines_diagonal(input5)
+```
+
+
+
+
+    21038
+
+
+
+# Day 6: Lanternfish
+
+## Part 1
 
 
 ```python
