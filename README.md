@@ -590,7 +590,101 @@ minimum_fuel_cost2(input7)
 
 
 
-# Day 8
+# Day 8: Seven Segment Search
+
+## Part 1
+
+
+```python
+test8_1_input = '''be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
+edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc
+fgaebd cg bdaec gdafb agbcfd gdcbef bgcad gfac gcb cdgabef | cg cg fdcagb cbg
+fbegcd cbd adcefb dageb afcb bc aefdc ecdab fgdeca fcdbega | efabcd cedba gadfec cb
+aecbfdg fbg gf bafeg dbefa fcge gcbea fcaegb dgceab fcbdga | gecf egdcabf bgf bfgea
+fgeab ca afcebg bdacfeg cfaedg gcfdb baec bfadeg bafgc acf | gebdcfa ecba ca fadegcb
+dbcfg fgd bdegcaf fgec aegbdf ecdfab fbedc dacgb gdcebf gf | cefg dcbef fcge gbcadfe
+bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd | ed bcgafe cdgba cbgef
+egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb
+gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce'''
+
+test8_1_output = 26
+
+#def parse_seven_segment(line):
+#    line.replace('| ', '')
+#    return line.split()
+
+def parse_seven_segment(line):
+    line.strip()
+    return line.split('|')
+
+def count_unique_digits(segments) -> int:
+    count = 0
+    for segment in segments:
+        for digit in segment[1].split():
+            if len(digit) <= 4 or len(digit) == 7:
+                count += 1
+    return count
+
+assert count_unique_digits([*map(parse_seven_segment, test8_1_input.split('\n'))]) == test8_1_output
+
+input8 = data(8, parse_seven_segment)
+
+count_unique_digits(input8)
+```
+
+
+
+
+    355
+
+
+
+## Part 2
+
+
+```python
+test8_2_output= 61229
+
+def occurence_counter(s):
+    return Counter(list(s.replace(" ", "")))
+
+def occurence_pattern(s, ctr):
+    return tuple(sorted([ctr[x] for x in s]))
+
+canonical_pattern = "abcefg cf acdeg acdfg bdcf abdfg abdefg acf abcdefg abcdfg"
+canonical_dict = occurence_counter(canonical_pattern)
+
+translator = {}
+for i, x in enumerate(canonical_pattern.split(" ")):
+    translator[occurence_pattern(x, canonical_dict)] = i
+
+def process_line(ls):
+    outputs = ls[1].strip()
+    occ_dict = occurence_counter(ls[0])
+    return [translator[occurence_pattern(x, occ_dict)] for x in outputs.split(" ")]
+
+def count_all_digits(segments) -> int:
+    count = 0
+    for segment in segments:
+        p = process_line(segment)
+        count += int("".join([str(x) for x in p]))
+    return count
+
+assert count_all_digits([*map(parse_seven_segment, test8_1_input.split('\n'))]) == test8_2_output
+
+input8 = data(8, parse_seven_segment)
+
+count_all_digits(input8)
+```
+
+
+
+
+    983030
+
+
+
+# Day 9
 
 
 ```python
