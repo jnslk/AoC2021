@@ -9,7 +9,7 @@ This notebook contains my solutions for the 2021 version of [Advent of Code](htt
 
 
 ```python
-from collections import Counter
+from collections import Counter, deque
 from statistics import median, mean
 from math import floor, ceil
 
@@ -684,7 +684,107 @@ count_all_digits(input8)
 
 
 
-# Day 9
+# Day 9: Smoke Basin
+
+## Part 1
+
+
+```python
+test9_1_input = '''2199943210
+3987894921
+9856789892
+8767896789
+9899965678'''
+
+test9_1_output = 15
+
+def find_lowpoints(heightmap) -> int:
+    Grid = []
+    for line in heightmap:
+        Grid.append([int(x) for x in line])
+    rows = len(Grid)
+    cols = len(Grid[0])
+    row_deltas = [-1,0,1,0]
+    col_deltas = [0,1,0,-1]
+    riskscore = 0
+    for r in range(rows):
+        for c in range(cols):
+            lowpoint = True
+            for delta in range(len(row_deltas)):
+                rr = r + row_deltas[delta]
+                cc = c + col_deltas[delta]
+                if 0<=rr<rows and 0<=cc<cols and Grid[rr][cc]<=Grid[r][c]:
+                    lowpoint = False
+            if lowpoint:
+                riskscore += Grid[r][c]+1
+    return riskscore
+
+assert find_lowpoints(test9_1_input.split('\n')) == test9_1_output
+
+input9 = data(9)
+
+find_lowpoints(input9)
+```
+
+
+
+
+    425
+
+
+
+## Part 2
+
+
+```python
+test9_2_output = 1134
+
+def find_basins(heightmap) -> int:
+    Grid = []
+    for line in heightmap:
+        Grid.append([int(x) for x in line])
+    rows = len(Grid)
+    cols = len(Grid[0])
+    row_deltas = [-1,0,1,0]
+    col_deltas = [0,1,0,-1]
+    basins = []
+    seen = set()
+    for r in range(rows):
+        for c in range(cols):
+            if (r,c) not in seen and Grid[r][c]!=9:
+                size = 0
+                Q = deque()
+                Q.append((r,c))
+                while Q:
+                    (r, c) = Q.popleft()
+                    if (r, c) in seen:
+                        continue
+                    seen.add((r,c))
+                    size += 1
+                    for delta in range(len(row_deltas)):
+                        rr = r+row_deltas[delta]
+                        cc = c+col_deltas[delta]
+                        if 0<=rr<rows and 0<=cc<cols and Grid[rr][cc]!=9:
+                            Q.append((rr,cc))
+                basins.append(size)
+    basins.sort()                
+    return basins[-1] * basins[-2] * basins[-3]
+
+assert find_basins(test9_1_input.split('\n')) == test9_2_output
+
+input9 = data(9)
+
+find_basins(input9)
+```
+
+
+
+
+    1135260
+
+
+
+# Day 10
 
 
 ```python
