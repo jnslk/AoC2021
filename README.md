@@ -784,7 +784,101 @@ find_basins(input9)
 
 
 
-# Day 10
+# Day 10: Syntax Scoring
+
+## Part 1
+
+
+```python
+test10_1_input = '''[({(<(())[]>[[{[]{<()<>>
+[(()[<>])]({[<{<<[]>>(
+{([(<{}[<>[]}>{[]{[(<()>
+(((({<>}<{<{<>}{[]{[]{}
+[[<[([]))<([[{}[[()]]]
+[{[{({}]{}}([{[{{{}}([]
+{<[[]]>}<{[{[{[]{()[[[]
+[<(<(<(<{}))><([]([]()
+<{([([[(<>()){}]>(<<{{
+<{([{{}}[<[[[<>{}]]]>[]]'''
+
+test10_1_output = 26397
+
+match = {')': '(', ']': '[', '}': '{', '>': '<'}
+
+penalty = {')': 3, ']': 57, '}': 1197, '>': 25137}
+
+def syntax_error_score(navigation_lines) -> int:
+    error_score = 0
+    for line in navigation_lines:
+        stack = []
+        for symbol in line:
+            if symbol in set('([<{'):
+                stack.append(symbol)
+            if symbol in set('}])>'):
+                previous = stack.pop()
+                if match[symbol] == previous:
+                    continue
+                else:
+                    error_score += penalty[symbol]
+    return error_score
+
+assert syntax_error_score(test10_1_input.split('\n')) == test10_1_output
+
+input10 = data(10)
+
+syntax_error_score(input10)
+```
+
+
+
+
+    462693
+
+
+
+## Part 2
+
+
+```python
+test10_2_output = 288957
+
+score = {'(': 1, '[': 2, '{': 3, '<':4}
+
+def auto_complete_score(navigation_lines) -> int:
+    completion_scores = []
+    for line in navigation_lines:
+        stack = []
+        for symbol in line:
+            if symbol in set('([<{'):
+                stack.append(symbol)
+            elif not stack or stack.pop() != match[symbol]:
+                stack = None
+                break
+                
+        if stack:
+            subtotal = 0
+
+            for symbol in stack[::-1]:
+                subtotal = 5 * subtotal + score[symbol]
+
+            completion_scores.append(subtotal)
+                    
+    
+    return median(completion_scores)
+
+assert auto_complete_score(test10_1_input.split('\n')) == test10_2_output
+
+input10 = data(10)
+
+auto_complete_score(input10)
+```
+
+
+
+
+    3094671161
+
+
 
 
 ```python
