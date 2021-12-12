@@ -880,6 +880,149 @@ auto_complete_score(input10)
 
 
 
+# Day 11: Dumbo Octopus
+
+## Part 1
+
+
+```python
+test11_1_input = '''5483143223
+2745854711
+5264556173
+6141336146
+6357385478
+4167524645
+2176841721
+6882881134
+4846848554
+5283751526'''
+
+test11_1_output = 1656
+
+rows = 10
+cols = 10
+
+def flash(r, c):
+    global count
+    global Grid
+    count += 1
+    Grid[r][c] = -1
+    for dr in [-1,0,1]:
+        for dc in [-1,0,1]:
+            rr = r+dr
+            cc = c+dc
+            if 0<=rr<rows and 0<=cc<cols and Grid[rr][cc]!=-1:
+                Grid[rr][cc] += 1
+                if Grid[rr][cc] >= 10:
+                    flash(rr,cc)
+
+
+
+def count_flashes(energy_levels, n=100) -> int:
+    global count
+    global Grid
+    Grid = []
+    for line in energy_levels:
+        Grid.append([int(x) for x in line])
+    rows = len(Grid)
+    cols = len(Grid[0])
+    count = 0
+
+    for step in range(n):
+        for r in range(rows):
+            for c in range(cols):
+                Grid[r][c] += 1
+        for r in range(rows):
+            for c in range(cols):
+                if Grid[r][c] == 10:
+                    flash(r,c)
+        for r in range(rows):
+            for c in range(cols):
+                if Grid[r][c] == -1:
+                    Grid[r][c] = 0
+                
+    return(count)
+
+assert count_flashes(test11_1_input.split()) == test11_1_output
+    
+input11 = data(11)
+
+count_flashes(input11)
+```
+
+
+
+
+    1599
+
+
+
+## Part 2
+
+
+```python
+test11_2_output = 195
+
+rows = 10
+cols = 10
+
+def flash(r, c):
+    global count
+    global Grid
+    count += 1
+    Grid[r][c] = -1
+    for dr in [-1,0,1]:
+        for dc in [-1,0,1]:
+            rr = r+dr
+            cc = c+dc
+            if 0<=rr<rows and 0<=cc<cols and Grid[rr][cc]!=-1:
+                Grid[rr][cc] += 1
+                if Grid[rr][cc] >= 10:
+                    flash(rr,cc)
+
+def synchronized_flashes(energy_levels) -> int:
+    global Grid
+    Grid = []
+    for line in energy_levels:
+        Grid.append([int(x) for x in line])
+    step = 0
+    while True:
+        step += 1
+        for r in range(rows):
+            for c in range(cols):
+                Grid[r][c] += 1
+        for r in range(rows):
+            for c in range(cols):
+                if Grid[r][c] == 10:
+                    flash(r, c)
+        done = True
+        for r in range(rows):
+            for c in range(cols):
+                if Grid[r][c] == -1:
+                    Grid[r][c] = 0
+                else:
+                    done = False
+        if done:
+            return step
+        
+assert synchronized_flashes(test11_1_input.split()) == test11_2_output
+
+input11 = data(11)
+
+synchronized_flashes(input11)
+```
+
+
+
+
+    418
+
+
+
+# Day 12
+
+## Part 1
+
 
 ```python
 
