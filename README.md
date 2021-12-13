@@ -9,7 +9,7 @@ This notebook contains my solutions for the 2021 version of [Advent of Code](htt
 
 
 ```python
-from collections import Counter, deque
+from collections import Counter, deque, defaultdict
 from statistics import median, mean
 from math import floor, ceil
 
@@ -53,13 +53,6 @@ input1 = data(1, int)
 deeper(input1)
 ```
 
-
-
-
-    1548
-
-
-
 ## Part 2
 
 The second part of the challenge is to use a sliding window of 3 measurements summed together and count the number of times when the measurements in this sliding window are greater than the previous sum.
@@ -80,13 +73,6 @@ assert deeper_sliding_window([*map(int, test1_1_input.split())]) == test1_2_outp
 input1 = data(1, int)
 deeper_sliding_window(input1)
 ```
-
-
-
-
-    1589
-
-
 
 # Day 2: Dive!
 
@@ -125,13 +111,6 @@ input2 = data(2, parse_course)
 follow_course(input2)
 ```
 
-
-
-
-    1924923
-
-
-
 ## Part 2
 
 
@@ -158,13 +137,6 @@ input2 = data(2, parse_course)
 
 follow_complex_course(input2)
 ```
-
-
-
-
-    1982495697
-
-
 
 # Day 3: Binary Diagnostic
 
@@ -216,13 +188,6 @@ input3 = data(3)
 check_power_consumption(input3)
 ```
 
-
-
-
-    3320834
-
-
-
 ## Part 2
 
 
@@ -266,13 +231,6 @@ assert verify_life_support_rating(test3_1_input.split()) == test3_2_output
 
 verify_life_support_rating(input3)
 ```
-
-
-
-
-    4481199
-
-
 
 # Day 4: Giant Squid
 
@@ -339,13 +297,6 @@ boards = [*map(str.split, input4[1:])]
 winning_board_score(nums, parse_boards(boards))
 ```
 
-
-
-
-    74320
-
-
-
 ## Part 2
 
 
@@ -373,13 +324,6 @@ boards = [*map(str.split, input4[1:])]
 
 last_board_score(nums, parse_boards(boards))
 ```
-
-
-
-
-    17884
-
-
 
 # Day 5: Hydrothermal Venture
 
@@ -1019,7 +963,135 @@ synchronized_flashes(input11)
 
 
 
-# Day 12
+# Day 12: Passage Pathing
+
+## Part 1
+
+
+```python
+test12_1_input1 = '''start-A
+start-b
+A-c
+A-b
+b-d
+A-end
+b-end'''
+
+test12_1_input2 = '''dc-end
+HN-start
+start-kj
+dc-start
+dc-HN
+LN-dc
+HN-end
+kj-sa
+kj-HN
+kj-dc'''
+
+test12_1_input3 = '''fs-end
+he-DX
+fs-he
+start-DX
+pj-DX
+end-zg
+zg-sl
+zg-pj
+pj-he
+RW-he
+fs-DX
+pj-RW
+zg-RW
+start-pj
+he-WI
+zg-he
+pj-fs
+start-RW'''
+
+test12_1_output1 = 10
+test12_1_output2 = 19
+test12_1_output3 = 226
+
+def parse_edges(line):
+    return line.split('-')
+
+def count_paths(edges, seen=[], cave='start') -> int:
+    global neighbours
+    neighbours = defaultdict(list)
+    for edge in edges:
+        neighbours[edge[0]] += [edge[1]]
+        neighbours[edge[1]] += [edge[0]]
+    return count(seen, cave)
+
+def count(seen=[], cave='start'):
+    if cave == 'end': return 1
+    if cave in seen:
+        if cave == 'start': return 0
+        if cave.islower():
+            return 0
+    return sum(count(seen+[cave], n) for n in neighbours[cave])
+
+assert count_paths([*map(parse_edges, test12_1_input1.split())]) == test12_1_output1
+assert count_paths([*map(parse_edges, test12_1_input2.split())]) == test12_1_output2
+assert count_paths([*map(parse_edges, test12_1_input3.split())]) == test12_1_output3
+
+input12 = data(12, parse_edges)
+
+count_paths(input12)
+```
+
+
+
+
+    5212
+
+
+
+## Part 2
+
+
+```python
+test12_2_output1 = 36
+test12_2_output2 = 103
+test12_2_output3 = 3509
+
+def parse_edges(line):
+    return line.split('-')
+
+def count_paths2(edges, seen=[], cave='start') -> int:
+    global neighbours
+    neighbours = defaultdict(list)
+    for edge in edges:
+        neighbours[edge[0]] += [edge[1]]
+        neighbours[edge[1]] += [edge[0]]
+    return count(part=2)
+
+def count(part, seen=[], cave='start'):
+    if cave == 'end': return 1
+    if cave in seen:
+        if cave == 'start': return 0
+        if cave.islower():
+            if part == 1: return 0
+            else: part = 1
+    return sum(count(part, seen+[cave], n)
+                for n in neighbours[cave])
+
+assert count_paths2([*map(parse_edges, test12_1_input1.split())]) == test12_2_output1
+assert count_paths2([*map(parse_edges, test12_1_input2.split())]) == test12_2_output2
+assert count_paths2([*map(parse_edges, test12_1_input3.split())]) == test12_2_output3
+
+input12 = data(12, parse_edges)
+
+count_paths2(input12)
+```
+
+
+
+
+    134862
+
+
+
+# Day 13: Transparent Origami
 
 ## Part 1
 
