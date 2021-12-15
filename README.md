@@ -12,6 +12,8 @@ This notebook contains my solutions for the 2021 version of [Advent of Code](htt
 from collections import Counter, deque, defaultdict
 from statistics import median, mean
 from math import floor, ceil
+from typing import Tuple, Set, cast, List
+import re
 
 def data(day: int, parser=str, sep='\n') -> list:
     "Split the day's input file into sections separated by `sep`, and apply `parser` function to each."
@@ -1094,6 +1096,139 @@ count_paths2(input12)
 # Day 13: Transparent Origami
 
 ## Part 1
+
+
+```python
+test13_1_input = '''6,10
+0,14
+9,10
+0,3
+10,4
+4,11
+6,0
+6,12
+4,1
+0,13
+10,12
+3,4
+3,0
+8,4
+1,10
+2,14
+8,10
+9,0
+
+fold along y=7
+fold along x=5'''
+
+test13_1_output = 17
+
+def count_points_after_fold(points, folds) -> int:
+    overlapping = 0
+    target = folds[0]
+    if target[0] == 'x':
+        for p in points:
+            if int(p[0]) > int(target[1:]):
+                distance = abs(int(target[1:]) - int(p[0]))
+                if [str((int(p[0]) - 2 * distance)), p[1]] in points:
+                    overlapping += 1
+    else:
+        for p in points:
+            if int(p[1]) > int(target[1:]):
+                distance = abs(int(target[1:]) - int(p[1]))
+                if [p[0], str((int(p[1]) - 2 * distance))] in points:
+                    overlapping += 1
+    return len(points) - overlapping
+
+test_points = [x.split(',') for x in test13_1_input.split('\n\n')[0].split('\n')]
+test_folds = [y[0][-1] + y[1] for y in [x.split('=') for x in test13_1_input.split('\n\n')[1].split('\n')]]
+
+assert count_points_after_fold(test_points, test_folds) == test13_1_output
+
+input13 = data(13, sep='\n\n')
+points = [x.split(',') for x in input13[0].split('\n')]
+folds = [y[0][-1] + y[1] for y in [x.split('=') for x in input13[1].split('\n')]]
+
+count_points_after_fold(points, folds)
+```
+
+
+
+
+    755
+
+
+
+## Part 2
+
+
+```python
+Point = Tuple[int, int]
+Grid = Set[Point]
+
+def parse_folds(folds: List[str]) -> List[Tuple[bool, int]]:
+    result: List[Tuple[bool, int]] = []
+    for fold in folds:
+        fold_desc = re.search(r"(x|y)(\d+)", fold)
+        assert fold_desc
+        result.append((fold_desc.group(1) == "y", int(fold_desc.group(2))))
+
+    return result
+
+def print_grid_after_folds(points, folds):
+    dots: Grid = {
+        cast(Point, tuple(map(int, point))) for point in points
+    }
+    folds = parse_folds(folds)
+    for fold_ins in folds:
+        dots = fold_grid(dots, *fold_ins)
+    print()
+    print_grid(dots)
+    return
+
+def print_grid(dots: Grid):
+    max_x = max(x[0] for x in dots)
+    max_y = max(y[1] for y in dots)
+
+    for y in range(max_y + 1):
+        for x in range(max_x + 1):
+            print("#" if (x, y) in dots else ".", end="")
+        print() # newline!
+    print() # space after the print
+    
+def fold_grid(dots: Grid, horiz: bool, val: int) -> Grid:
+    result: Grid = set()
+    modified_index, same_index = (1, 0) if horiz else (0, 1)
+
+    for p in dots:
+        # if being folded onto, no change
+        if p[modified_index] < val:
+            result.add(p)
+            continue
+
+        updated_point = [-1, -1]
+        # one half of the points is unmodified
+        updated_point[same_index] = p[same_index]
+
+        # the other half changes based on its distance to the line
+        updated_point[modified_index] = 2 * val - p[modified_index]
+
+        result.add(cast(Point, tuple(updated_point)))
+
+    return result
+
+print_grid_after_folds(points, folds)
+```
+
+    
+    ###..#....#..#...##.###..###...##...##.
+    #..#.#....#.#.....#.#..#.#..#.#..#.#..#
+    ###..#....##......#.#..#.###..#..#.#...
+    #..#.#....#.#.....#.###..#..#.####.#.##
+    #..#.#....#.#..#..#.#.#..#..#.#..#.#..#
+    ###..####.#..#..##..#..#.###..#..#..###
+    
+
 
 
 ```python
