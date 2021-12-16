@@ -327,6 +327,13 @@ boards = [*map(str.split, input4[1:])]
 last_board_score(nums, parse_boards(boards))
 ```
 
+
+
+
+    17884
+
+
+
 # Day 5: Hydrothermal Venture
 
 ## Part 1
@@ -1229,6 +1236,108 @@ print_grid_after_folds(points, folds)
     ###..####.#..#..##..#..#.###..#..#..###
     
 
+
+# Day 14: Extended Polymerization
+
+## Part 1
+
+
+```python
+test14_1_input = '''NNCB
+
+CH -> B
+HH -> N
+CB -> H
+NH -> C
+HB -> C
+HC -> B
+HN -> C
+NN -> C
+BH -> H
+NC -> B
+NB -> B
+BN -> B
+BB -> N
+BC -> B
+CC -> N
+CN -> C'''
+
+test14_1_output = 1588
+
+def pairs_in_string(s):
+    return [''.join(pair) for pair in zip(s[:-1], s[1:])]
+
+def polymerization(template, insertion_rules, n=10) -> int:
+    polymer = template
+    rules = dict(insertion_rules)
+    for step in range(n):
+        pairs = pairs_in_string(polymer)
+        new_polymer = ''
+        for pair in pairs[:-1]:
+            new_polymer = new_polymer + pair[0] + rules[pair]
+        new_polymer = new_polymer + pairs[-1][0] + rules[pairs[-1]] + pairs[-1][1]
+        polymer = new_polymer
+    c = Counter(polymer)
+    return max(c.values()) - min(c.values())
+
+test_template = test14_1_input.split('\n\n')[0]
+test_insertion_rules = [x.split(' -> ') for x in test14_1_input.split('\n\n')[1].split('\n')]
+
+assert polymerization(test_template, test_insertion_rules) == test14_1_output
+
+input14 = data(14, sep='\n\n')
+template = input14[0]
+insertion_rules = [x.split(' -> ') for x in input14[1].split('\n')]
+
+polymerization(template, insertion_rules)
+```
+
+
+
+
+    2745
+
+
+
+## Part 2
+
+
+```python
+test14_2_output = 2188189693529
+
+def pairs_in_string(s):
+    return [''.join(pair) for pair in zip(s[:-1], s[1:])]
+
+def lanternfish_polymerization(template, insertion_rules, n=40) -> int:
+    rules = dict(insertion_rules)
+    pairs = Counter(pairs_in_string(template))
+    chars = Counter(template)
+    
+    for step in range(n):
+        for (a,b), c in pairs.copy().items():
+            x = rules[a+b]
+            pairs[a+b] -= c
+            pairs[a+x] += c
+            pairs[x+b] += c
+            chars[x] += c
+
+    return (max(chars.values()) - min(chars.values()))
+
+assert lanternfish_polymerization(test_template, test_insertion_rules) == test14_2_output
+
+lanternfish_polymerization(template, insertion_rules)
+```
+
+
+
+
+    3420801168962
+
+
+
+# Day 15: Chiton
+
+## Part 1
 
 
 ```python
