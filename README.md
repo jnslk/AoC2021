@@ -11,9 +11,10 @@ This notebook contains my solutions for the 2021 version of [Advent of Code](htt
 ```python
 from collections import Counter, deque, defaultdict
 from statistics import median, mean
-from math import floor, ceil
+from math import floor, ceil, inf
 from typing import Tuple, Set, cast, List
 import re
+import heapq
 
 def data(day: int, parser=str, sep='\n') -> list:
     "Split the day's input file into sections separated by `sep`, and apply `parser` function to each."
@@ -1305,9 +1306,6 @@ polymerization(template, insertion_rules)
 ```python
 test14_2_output = 2188189693529
 
-def pairs_in_string(s):
-    return [''.join(pair) for pair in zip(s[:-1], s[1:])]
-
 def lanternfish_polymerization(template, insertion_rules, n=40) -> int:
     rules = dict(insertion_rules)
     pairs = Counter(pairs_in_string(template))
@@ -1338,6 +1336,99 @@ lanternfish_polymerization(template, insertion_rules)
 # Day 15: Chiton
 
 ## Part 1
+
+
+```python
+test15_1_input = '''1163751742
+1381373672
+2136511328
+3694931569
+7463417111
+1319128137
+1359912421
+3125421639
+1293138521
+2311944581'''
+
+test15_1_output = 40
+    
+def neighbors(r, c, h, w):
+    for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+        rr, cc = (r + dr, c + dc)
+        if 0 <= rr < w and 0 <= cc < h:
+            yield rr, cc
+
+def dijkstra(risk_levels):
+    grid = list(list(map(int, row)) for row in risk_levels)
+    h, w = len(grid), len(grid[0])
+    source = (0, 0)
+    destination = (h - 1, w - 1)
+    queue = [(0, source)]
+    mindist = defaultdict(lambda: inf, {source: 0})
+    visited = set()
+    while queue:
+        dist, node = heapq.heappop(queue)
+        if node == destination:
+            return dist
+        if node in visited:
+            continue
+        visited.add(node)
+        r, c = node
+        for neighbor in neighbors(r, c, h, w):
+            if neighbor in visited:
+                continue
+            nr, nc  = neighbor
+            newdist = dist + grid[nr][nc]
+            if newdist < mindist[neighbor]:
+                mindist[neighbor] = newdist
+                heapq.heappush(queue, (newdist, neighbor))
+    return inf
+
+assert dijkstra(test15_1_input.split('\n')) == test15_1_output
+
+input15 = data(15)
+
+dijkstra(input15)
+```
+
+
+
+
+    462
+
+
+
+## Part 2
+
+
+```python
+test15_2_output = 315
+
+def expand_tile(risk_levels):
+    grid = list(list(map(int, row)) for row in risk_levels)
+    tilew = len(grid)
+    tileh = len(grid[0])
+    for _ in range(4):
+        for row in grid:
+            tail = row[-tilew:]
+            row.extend((x + 1) if x < 9 else 1 for x in tail)
+    for _ in range(4):
+        for row in grid[-tileh:]:
+            row = [(x + 1) if x < 9 else 1 for x in row]
+            grid.append(row)
+    return grid
+
+assert dijkstra(expand_tile(test15_1_input.split('\n'))) == test15_2_output
+
+dijkstra(expand_tile(input15))
+```
+
+
+
+
+    2846
+
+
 
 
 ```python
